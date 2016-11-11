@@ -19,7 +19,7 @@ import time
 import paramiko
 import datetime
 
-def get_cmd_output(sub_command,sub_delay):
+def get_cmd_output(sub_device,sub_command,sub_delay):
   """
   This codechunk issues a command to a Brocade device and stores the output 
   of that command in a variable.  It requires that you are already connected
@@ -41,7 +41,7 @@ def get_cmd_output(sub_command,sub_delay):
     time.sleep(sub_delay)
     timercount = timercount + 1
     if timercount > 50:
-      print "Connection FAILED!!!!"
+      print "Acquistion of output for command %s on device %s FAILED!" % (sub_command, sub_device)
       sys.exit()
 
   #The device is ready to provide data. This structure reads a chunk
@@ -103,7 +103,7 @@ while current_device:  #While the variable "current_device" is not empty
   #The next line creates a text string representing the date and time and stores in variable "timestamp"
   timestamp = time.strftime("%Y%m%d") + "_" + time.strftime("%H%M")
   #"sho run | i hostname" is sent and the resulting dialog is saved in variable "sho_hostname_resp"
-  sho_hostname_resp = get_cmd_output("sho run | i hostname",0.05)
+  sho_hostname_resp = get_cmd_output(current_device,"sho run | i hostname",0.05)
   #my_shell.send("sho run | i hostname\n")
   #time.sleep(0.500)
   #sho_hostname_resp = my_shell.recv(1000)
@@ -119,11 +119,11 @@ while current_device:  #While the variable "current_device" is not empty
   current_command = command_inputs.readline()
   
   while current_command:
-    current_command_resp = get_cmd_output(current_command,0.05)
+    current_command_resp = get_cmd_output(current_device,current_command,0.05)
     output_file.write(current_command_resp)
     current_command = command_inputs.readline()
   #output_file_name.close()
   #close(output_file_name)
-  commands_to_be_sent_file.close()
+  command_inputs.close()
   current_device = device_IP.readline()
-devices.close(current_device)
+device_IP.close()
